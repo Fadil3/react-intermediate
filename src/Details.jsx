@@ -17,8 +17,8 @@ const Details = () => {
 
   if (results.isLoading) {
     return (
-      <div className="loading-pane">
-        <h2 className="loader">🌀</h2>
+      <div className="mx-auto">
+        <h2 className="animate-spin">🌀</h2>
       </div>
     );
   }
