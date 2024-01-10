@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useDeferredValue, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Results from "./Results";
 import AdoptedPetContext from "./AdoptedPetContext";
@@ -18,11 +18,13 @@ const SearchParams = () => {
 
   const results = useQuery(["search", requestParams], fetchSearch);
   const pets = results?.data?.pets ?? [];
+  const deferredPets = useDeferredValue(pets);
+  const renderedPets = useMemo(() => <Results pets={pets} />, [deferredPets]);
 
   return (
     <div className="my-0 mx-auto w-11/12">
       <form
-      className="p-10 mb-10 rounded-lg bg-gray-200 shadow-lg flex flex-col justify-center items-center"
+        className="mb-10 flex flex-col items-center justify-center rounded-lg bg-gray-200 p-10 shadow-lg"
         onSubmit={(e) => {
           e.preventDefault();
           const formData = new FormData(e.target);
@@ -41,7 +43,13 @@ const SearchParams = () => {
         ) : null}
         <label htmlFor="location">
           Location
-          <input type="text" id="location" name="location" placeholder="Location" className="search-input" />
+          <input
+            type="text"
+            id="location"
+            name="location"
+            placeholder="Location"
+            className="search-input"
+          />
         </label>
 
         <label htmlFor="animal">
@@ -68,7 +76,12 @@ const SearchParams = () => {
 
         <label htmlFor="breed">
           Breed
-          <select className="search-input disable-input" disabled={!breeds.length} id="breed" name="breed">
+          <select
+            className="search-input disable-input"
+            disabled={!breeds.length}
+            id="breed"
+            name="breed"
+          >
             <option />
             {breeds.map((breed) => (
               <option key={breed} value={breed}>
@@ -78,9 +91,11 @@ const SearchParams = () => {
           </select>
         </label>
 
-        <button className="rounded px-6 py-2 text-white hover:opacity-50 bg-orange-500">Submit</button>
+        <button className="rounded bg-orange-500 px-6 py-2 text-white hover:opacity-50">
+          Submit
+        </button>
       </form>
-      <Results pets={pets} />
+      {renderedPets}
     </div>
   );
 };
