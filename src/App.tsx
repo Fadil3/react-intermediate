@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, lazy, Suspense } from "react";
 import AdoptedPetContext from "./AdoptedPetContext";
+import { Pet } from "./types";
 
 const Details = lazy(() => import("./Details"));
 const SearchParams = lazy(() => import("./SearchParams"));
@@ -17,7 +18,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  const adoptedPet = useState(null);
+  const adoptedPet = useState(null as Pet | null);
   return (
     <div
       className="m-0 p-0"
@@ -57,5 +58,5 @@ const App = () => {
 };
 
 const container = document.getElementById("root");
-const root = createRoot(container);
+const root = createRoot(container as HTMLElement);
 root.render(<App />);
