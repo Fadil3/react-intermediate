@@ -1,12 +1,13 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useContext, useState, Suspense, lazy } from "react";
-import AdoptedPetContext from "./AdoptedPetContext";
+import { useState, Suspense, lazy } from "react";
 import ErrorBoundary from "./ErrorBoundary";
 import fetchPet from "./fetchPet";
 import Carousel from "./Carousel";
 import { Pet } from "./types";
 import { JSX } from "react/jsx-runtime";
+import { useAppDispatch } from "./hooks";
+import { adopt } from "./adoptedPetSlice";
 
 const Details = () => {
   const { id } = useParams();
@@ -14,8 +15,8 @@ const Details = () => {
   const navigate = useNavigate();
   const results = useQuery(["details", id as string], fetchPet);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setAdoptedPet] = useContext(AdoptedPetContext);
+  const dispatch = useAppDispatch();
+
   const Modal = lazy(() => import("./Modal"));
 
   if (results.isLoading) {
@@ -64,7 +65,7 @@ const Details = () => {
                   <button
                     className="mx-auto rounded-lg bg-green-500 px-4 py-2 text-white"
                     onClick={() => {
-                      setAdoptedPet(pet);
+                      dispatch(adopt(pet));
                       navigate("/");
                     }}
                   >

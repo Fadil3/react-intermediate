@@ -1,10 +1,11 @@
-import { useContext, useState, useDeferredValue, useMemo } from "react";
+import { useState, useDeferredValue, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Results from "./Results";
-import AdoptedPetContext from "./AdoptedPetContext";
 import useBreedList from "./useBreedList";
 import fetchSearch from "./fetchSearch";
 import { Animal } from "./types";
+// import { useSelector } from "react-redux";
+import { useAppSelector } from "./hooks";
 const ANIMALS: Animal[] = ["bird", "cat", "dog", "rabbit", "reptile"];
 
 const SearchParams = () => {
@@ -13,14 +14,15 @@ const SearchParams = () => {
     animal: "",
     breed: "",
   });
-  const [adoptedPet] = useContext(AdoptedPetContext);
+
   const [animal, setAnimal] = useState("" as Animal);
   const [breeds] = useBreedList(animal);
-
+  const adoptedPet = useAppSelector((state) => state.adoptedPet?.value);
   const results = useQuery(["search", requestParams], fetchSearch);
   const pets = results?.data?.pets ?? [];
   const deferredPets = useDeferredValue(pets);
   const renderedPets = useMemo(() => <Results pets={pets} />, [deferredPets]);
+  console.log("adopt", adoptedPet);
 
   return (
     <div className="my-0 mx-auto w-11/12">
@@ -38,7 +40,7 @@ const SearchParams = () => {
         }}
       >
         {adoptedPet ? (
-          <div className="pet image-container">
+          <div className="w-[200px]">
             <img src={adoptedPet.images[0]} alt={adoptedPet.name} />
           </div>
         ) : null}
