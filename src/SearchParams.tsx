@@ -1,11 +1,13 @@
 import { useState, useDeferredValue, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+// import { useQuery } from "@tanstack/react-query";
 import Results from "./Results";
 import useBreedList from "./useBreedList";
-import fetchSearch from "./fetchSearch";
+// import fetchSearch from "./fetchSearch";
 import { Animal } from "./types";
 // import { useSelector } from "react-redux";
 import { useAppSelector } from "./hooks";
+import { useSearchQuery } from "./petApiService";
+
 const ANIMALS: Animal[] = ["bird", "cat", "dog", "rabbit", "reptile"];
 
 const SearchParams = () => {
@@ -18,11 +20,18 @@ const SearchParams = () => {
   const [animal, setAnimal] = useState("" as Animal);
   const [breeds] = useBreedList(animal);
   const adoptedPet = useAppSelector((state) => state.adoptedPet?.value);
-  const results = useQuery(["search", requestParams], fetchSearch);
-  const pets = results?.data?.pets ?? [];
+
+  const { data: pets, isLoading } = useSearchQuery({
+    location: requestParams.location,
+    animal: requestParams.animal as Animal,
+    breed: requestParams.breed,
+  });
+
   const deferredPets = useDeferredValue(pets);
-  const renderedPets = useMemo(() => <Results pets={pets} />, [deferredPets]);
-  console.log("adopt", adoptedPet);
+  const renderedPets = useMemo(
+    () => <Results pets={pets || []} />,
+    [deferredPets, pets],
+  );
 
   return (
     <div className="my-0 mx-auto w-11/12">
@@ -98,7 +107,7 @@ const SearchParams = () => {
           Submit
         </button>
       </form>
-      {renderedPets}
+      {isLoading ? <h1>Loading...</h1> : renderedPets}
     </div>
   );
 };

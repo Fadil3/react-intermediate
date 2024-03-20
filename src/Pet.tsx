@@ -7,8 +7,8 @@ interface Pet {
   location: string;
   id: number;
 }
-const Pet = (props: Pet) => {
-  const { name, animal, breed, images, location, id } = props;
+const Pet = ({ name, animal, breed, images, location, id }: Pet) => {
+  // const { name, animal, breed, images, location, id } = props;
 
   let hero = "http://pets-images.dev-apis.com/pets/none.jpg";
   if (images.length) {
@@ -22,6 +22,7 @@ const Pet = (props: Pet) => {
     >
       <div className="h-full w-full rounded-lg">
         <img
+          data-testid="pet-thumbnail"
           loading="lazy"
           src={hero}
           alt={name}

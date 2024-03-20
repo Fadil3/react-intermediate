@@ -1,33 +1,38 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { useState, Suspense, lazy } from "react";
 import ErrorBoundary from "./ErrorBoundary";
-import fetchPet from "./fetchPet";
 import Carousel from "./Carousel";
-import { Pet } from "./types";
 import { JSX } from "react/jsx-runtime";
 import { useAppDispatch } from "./hooks";
 import { adopt } from "./adoptedPetSlice";
+import { useGetPetQuery } from "./petApiService";
+
+//contoh penggunaan react-query
+// import fetchPet from "./fetchPet";
+// import { useQuery } from "@tanstack/react-query";
 
 const Details = () => {
   const { id } = useParams();
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-  const results = useQuery(["details", id as string], fetchPet);
+
+  //contoh penggunaan react-query
+  // const results = useQuery(["details", id as string], fetchPet);
+  // bisa akses results.isLoading, results.data, results.error
+
+  const { isLoading, data: pet } = useGetPetQuery(id as string);
 
   const dispatch = useAppDispatch();
 
   const Modal = lazy(() => import("./Modal"));
 
-  if (results.isLoading) {
+  if (isLoading) {
     return (
       <div className="mx-auto">
         <h2 className="animate-spin">🌀</h2>
       </div>
     );
   }
-
-  const pet = results?.data?.pets[0] as Pet;
 
   if (!pet) {
     throw new Error("pet not found");
